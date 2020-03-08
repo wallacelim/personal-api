@@ -1,20 +1,15 @@
 const mongoose = require("mongoose");
-
-const Schema = mongoose.Schema;
+const { Schema } = mongoose;
 
 const postSchema = new Schema(
     {
         title: {
             type: String,
-            required: true,
-            trim: true,
-            minlength: 1
+            required: true
         },
         author: {
             type: String,
-            default: "Wallace",
-            trim: true,
-            minlength: 1
+            default: "Wallace"
         },
         category: {
             type: String
@@ -37,5 +32,33 @@ const postSchema = new Schema(
     }
 );
 
-const Post = mongoose.model("Post", postSchema);
-module.exports = Post;
+module.exports = mongoose.model("Post", postSchema);
+
+// const { buildSchema } = require("graphql");
+
+// const schema = new buildSchema(`
+//     Post {
+//         title: String!
+//         author: String!
+//         category: {
+//             type: String
+//         },
+//         body: {
+//             type: String,
+//             required: true
+//         },
+//         date: {
+//             type: Date,
+//             default: Date.now
+//         },
+//         hidden: {
+//             type: Boolean,
+//             default: false
+//         }
+//     },
+//     {
+//         timestamps: true
+//     }
+// `);
+
+// module.exports = Post;
