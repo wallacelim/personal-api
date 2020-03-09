@@ -2,8 +2,9 @@ const express = require("express");
 const cors = require("cors");
 var mongoose = require("mongoose");
 const graphqlHTTP = require("express-graphql");
-const { buildSchema } = require("graphql");
-const Post = require("./models/post.model.js");
+
+const graphqlSchema = require("./graphql/schema/index");
+const graphqlResolvers = require("./graphql/resolvers/index");
 
 require("dotenv").config();
 
@@ -16,69 +17,8 @@ app.use(express.json());
 app.use(
     "/graphql",
     graphqlHTTP({
-        schema: buildSchema(`
-            type Post {
-                _id: ID!
-                title: String!
-                body: String!
-                author: String!
-                category: String
-                date: String!
-                hidden: Boolean
-            }
-
-            input PostInput {
-                title: String!
-                body: String!
-                author: String!
-                category: String
-                date: String!
-                hidden: Boolean
-            }
-
-            type RootQuery {
-                posts: [Post!]!
-            }
-
-            type RootMutation {
-                createPost(postInput: PostInput): Post
-            }
-
-            schema {
-                query: RootQuery
-                mutation: RootMutation
-            }
-        `),
-        rootValue: {
-            posts: async () => {
-                try {
-                    const posts = await Post.find();
-                    return posts.map(post => {
-                        return { ...post._doc };
-                    });
-                } catch (err) {
-                    throw err;
-                }
-            },
-            createPost: async args => {
-                const post = new Post({
-                    title: args.postInput.title,
-                    body: args.postInput.body,
-                    author: args.postInput.author,
-                    category: args.postInput.category,
-                    date: new Date(args.postInput.date),
-                    hidden: args.postInput.hidden
-                });
-                try {
-                    const result = await post.save();
-                    console.log(result);
-                    return { ...result._doc };
-                } catch (err) {
-                    console.error(err);
-                    throw err;
-                }
-            }
-        },
+        schema: graphqlSchema,
+        rootValue: graphqlResolvers,
         graphiql: true
     })
 );

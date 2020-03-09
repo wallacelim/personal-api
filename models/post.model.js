@@ -8,8 +8,9 @@ const postSchema = new Schema(
             required: true
         },
         author: {
-            type: String,
-            default: "Wallace"
+            type: Schema.Types.ObjectId,
+            default: "5e667ea4d9ae1785f843191e",
+            ref: "User"
         },
         category: {
             type: String
@@ -33,32 +34,3 @@ const postSchema = new Schema(
 );
 
 module.exports = mongoose.model("Post", postSchema);
-
-// const { buildSchema } = require("graphql");
-
-// const schema = new buildSchema(`
-//     Post {
-//         title: String!
-//         author: String!
-//         category: {
-//             type: String
-//         },
-//         body: {
-//             type: String,
-//             required: true
-//         },
-//         date: {
-//             type: Date,
-//             default: Date.now
-//         },
-//         hidden: {
-//             type: Boolean,
-//             default: false
-//         }
-//     },
-//     {
-//         timestamps: true
-//     }
-// `);
-
-// module.exports = Post;
