@@ -1,6 +1,7 @@
 const bcrypt = require("bcryptjs");
 const Post = require("../../models/post.model.js");
 const User = require("../../models/user.model.js");
+const Archive = require("../../models/archive.model.js");
 
 const user = async userId => {
     try {
@@ -9,6 +10,20 @@ const user = async userId => {
             ...user._doc,
             posts: posts.bind(this, user._doc.posts)
         };
+    } catch (err) {
+        throw err;
+    }
+};
+
+const users = async userIds => {
+    try {
+        const users = await User.find({ _id: { $in: userIds } });
+        return users.map(user => {
+            return {
+                ...user._doc,
+                posts: posts.bind(this, user._doc.posts)
+            };
+        });
     } catch (err) {
         throw err;
     }
@@ -29,6 +44,28 @@ const posts = async postIds => {
     }
 };
 
+const post = async postId => {
+    try {
+        const post = await Post.findById(postId);
+        return {
+            ...post._doc,
+            date: new Date(post._doc.date).toISOString(),
+            author: user.bind(this, post.author)
+        };
+    } catch (err) {
+        throw err;
+    }
+};
+
+const archive = async id => {
+    try {
+        const archive = await Archive.findById(id);
+        return { ...archive._doc, posts: posts.bind(this, archive.posts) };
+    } catch (err) {
+        throw err;
+    }
+};
+
 module.exports = {
     posts: async () => {
         try {
@@ -41,6 +78,14 @@ module.exports = {
                     author: user.bind(this, post._doc.author)
                 };
             });
+        } catch (err) {
+            throw err;
+        }
+    },
+    archive: async args => {
+        try {
+            const archive = await Archive.findOne({ name: args.name });
+            return { ...archive._doc };
         } catch (err) {
             throw err;
         }
@@ -91,6 +136,18 @@ module.exports = {
             return { ...result._doc, password: null };
         } catch (err) {
             console.error(err);
+            throw err;
+        }
+    },
+    createArchive: async args => {
+        try {
+            const archive = await new Archive({
+                name: args.archiveInput.name,
+                protected: args.archiveInput.protected,
+                accessKey: args.archiveInput.accessKey
+            }).save();
+            return { ...archive._doc };
+        } catch (err) {
             throw err;
         }
     }

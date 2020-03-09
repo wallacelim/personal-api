@@ -32,14 +32,38 @@ module.exports = buildSchema(`
         password: String!
     }
 
+    type Archive {
+        _id: ID!
+        name: String
+        posts: [Post!]!
+        authorizedUsers: [User!]!
+        protected: Boolean!
+        accessKey: String
+    }
+    
+    input ArchiveInput {
+        name: String!
+        protected: Boolean
+        accessKey: String
+    }
+
     type RootQuery {
         posts: [Post!]!
+        archives: [Archive!]!
+        archive: Archive!
     }
 
     type RootMutation {
         createPost(postInput: PostInput): Post
         createUser(userInput: UserInput) : User
+        createArchive(archiveInput: ArchiveInput) : Archive
+        addPostToArchive(postIds: [ID!]!) : [Post!]!
+        addUserToArchive(userIds: [ID!]!) : [User!]!
+        removePostFromArchive(postIds: [ID!]!) : [Post!]!
+        removeUserFromArchive(userIds: [ID!]!) : [User!]!
     }
+
+    
 
     schema {
         query: RootQuery
